@@ -16,6 +16,7 @@ ClaudeToCodex is an innovative AI orchestration system that leverages Claude as 
 - **🔄 Seamless Integration**: Direct CLI communication via STDIN
 - **📝 Comprehensive Reporting**: JSON reports for every execution
 - **🛡️ Error Resilience**: Built-in retry logic and error handling
+- **📡 Real-time Monitoring**: Web UI to watch Claude ↔ Codex communication live
 
 ## 🚀 Quick Start
 
@@ -56,6 +57,18 @@ python3 claudetocodex.py debug "Fix database connection timeout"
 
 # Refactor code
 python3 claudetocodex.py refactor "Optimize database queries"
+```
+
+### With Real-time Monitoring
+
+```bash
+# Install monitoring dependencies
+pip install -r requirements.txt
+
+# Run with monitoring UI
+python3 claudetocodex_monitor.py project "Todo API"
+
+# Monitor opens automatically at http://localhost:5555
 ```
 
 ## 🏗️ Architecture
