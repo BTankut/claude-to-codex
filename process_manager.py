@@ -135,18 +135,20 @@ class CodexProcessManager:
         if not self.session_dir.exists():
             return None
         
-        session_files = list(self.session_dir.glob('*.jsonl'))
+        # Search in nested date folders
+        session_files = list(self.session_dir.rglob('*.jsonl'))
         
         if project_dir:
-            # Filter sessions by project directory
+            # Filter sessions by project directory (multiple formats)
             filtered = []
             for file in session_files:
                 try:
                     with open(file, 'r') as f:
-                        for line in f:
-                            if '<cwd>' in line and project_dir in line:
-                                filtered.append(file)
-                                break
+                        content = f.read()
+                        if (f'<cwd>{project_dir}</cwd>' in content or 
+                            f'"cwd":"{project_dir}"' in content or
+                            project_dir in content):
+                            filtered.append(file)
                 except:
                     continue
             session_files = filtered

@@ -26,12 +26,15 @@ class CodexSessionManager:
             return []
         
         sessions = []
-        for session_file in self.session_dir.glob('*.jsonl'):
+        # Search in nested date folders
+        for session_file in self.session_dir.rglob('*.jsonl'):
             try:
                 with open(session_file, 'r') as f:
                     content = f.read()
-                    # Check if session belongs to this project
-                    if f'<cwd>{self.project_dir}</cwd>' in content:
+                    # Check if session belongs to this project (multiple formats)
+                    if (f'<cwd>{self.project_dir}</cwd>' in content or 
+                        f'"cwd":"{self.project_dir}"' in content or
+                        self.project_dir in content):
                         sessions.append(session_file)
             except:
                 continue

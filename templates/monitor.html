@@ -330,6 +330,46 @@
             addLog(data.level, data.message, data.details);
         });
         
+        // Handle generic messages (Monitor V2)
+        socket.on('message', (data) => {
+            console.log('Received message:', data);
+            
+            // Handle different message types
+            if (data.type === 'plan_set') {
+                currentPlan = data.data.plan;
+                updatePlan(data.data.plan);
+                updateStatus('planning');
+            } else if (data.type === 'claude_to_codex') {
+                addLog('info', '🤖 Claude → Codex', {
+                    instruction: data.data.instruction,
+                    timestamp: data.data.timestamp
+                });
+            } else if (data.type === 'codex_response') {
+                if (data.data.success) {
+                    addLog('success', '✅ Codex completed', {
+                        time: data.data.execution_time
+                    });
+                } else {
+                    addLog('error', '❌ Codex failed');
+                }
+            } else if (data.type === 'step_started') {
+                currentStep = data.data.step;
+                updateCurrentStep(data.data.step);
+                highlightStep(data.data.step);
+                addLog('info', `📍 Step ${data.data.step}/${data.data.total}: ${data.data.description}`);
+            } else if (data.type === 'step_completed') {
+                markStepCompleted(data.data.step, data.data.success);
+                if (data.data.success) successCount++;
+                else failCount++;
+                updateSuccessRate();
+            } else if (data.type === 'execution_completed') {
+                updateStatus('completed');
+                addLog('success', `📊 Completed: ${data.data.success_rate}`);
+            } else if (data.type === 'log') {
+                addLog(data.data.level, data.data.message, data.data.details);
+            }
+        });
+        
         // UI Update functions
         function updateStatus(status) {
             const statusEl = document.getElementById('status');
